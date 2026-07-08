@@ -215,8 +215,29 @@ export default function App() {
             .catch(() => { });
     }, []);
 
-    const dayMenu = menuData[selectedDay] || {};
-    const bannerItems = mealInfo?.meal ? (dayMenu[mealInfo.meal] || []) : [];
+    const getMenuForDay = (day) => {
+        let menu = menuData[day] || {};
+        if (day === 'wednesday') {
+            const todayDate = new Date();
+            const diff = 3 - todayDate.getDay(); // 3 is Wednesday
+            const wedDate = new Date(todayDate);
+            wedDate.setDate(todayDate.getDate() + diff);
+            const dateOfMonth = wedDate.getDate();
+            const is2ndOr4th = (dateOfMonth >= 8 && dateOfMonth <= 14) || (dateOfMonth >= 22 && dateOfMonth <= 28);
+
+            if (is2ndOr4th && menu.dinner) {
+                menu = {
+                    ...menu,
+                    dinner: menu.dinner.map(item => item === 'PANEER BUTTER MASALA' ? 'VEG PANEER BIRYANI' : item)
+                };
+            }
+        }
+        return menu;
+    };
+
+    const dayMenu = getMenuForDay(selectedDay);
+    const todayMenu = getMenuForDay(today);
+    const bannerItems = mealInfo?.meal ? (todayMenu[mealInfo.meal] || []) : [];
 
     return (
         <div className="app">

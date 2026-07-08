@@ -217,21 +217,42 @@ export default function App() {
 
     const getMenuForDay = (day) => {
         let menu = menuData[day] || {};
-        if (day === 'wednesday') {
+
+        if (day === "wednesday") {
             const todayDate = new Date();
-            const diff = 3 - todayDate.getDay(); // 3 is Wednesday
+            const diff = 3 - todayDate.getDay(); // 3 = Wednesday
             const wedDate = new Date(todayDate);
             wedDate.setDate(todayDate.getDate() + diff);
+
             const dateOfMonth = wedDate.getDate();
-            const is2ndOr4th = (dateOfMonth >= 8 && dateOfMonth <= 14) || (dateOfMonth >= 22 && dateOfMonth <= 28);
+            const is2ndOr4th =
+                (dateOfMonth >= 8 && dateOfMonth <= 14) ||
+                (dateOfMonth >= 22 && dateOfMonth <= 28);
 
             if (is2ndOr4th && menu.dinner) {
+                const dinner = [...menu.dinner];
+
+                const paneerIndex = dinner.indexOf("PANEER BUTTER MASALA");
+
+                // Remove Paneer Butter Masala and Chapathi
+                const filtered = dinner.filter(
+                    item =>
+                        item !== "PANEER BUTTER MASALA" &&
+                        item !== "CHAPATHI"
+                );
+
+                // Insert Veg Paneer Biryani at the original Paneer Butter Masala position
+                if (paneerIndex !== -1) {
+                    filtered.splice(paneerIndex, 0, "VEG PANEER BIRYANI");
+                }
+
                 menu = {
                     ...menu,
-                    dinner: menu.dinner.map(item => item === 'PANEER BUTTER MASALA' ? 'VEG PANEER BIRYANI' : item)
+                    dinner: filtered,
                 };
             }
         }
+
         return menu;
     };
 
